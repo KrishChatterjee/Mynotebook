@@ -4,6 +4,7 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NoteState from './context/notes/NoteState';
+import { Alert } from './components/Alert';
 
 
 function App() {
@@ -15,6 +16,8 @@ function App() {
         <BrowserRouter>
           {/* Navbar is commom in all routes hence independent of Routes  */}
           <Navbar />
+          {/* Alert just after navbar with message as props */}
+          <Alert message="hiii"/>
           {/* All the Route are wrapped within Routes  */}
           <div className="container">
             <Routes>
