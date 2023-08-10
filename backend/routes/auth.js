@@ -16,6 +16,7 @@ router.post('/createuser', [
     body('password', 'Password is too short must be atleast 5 characters').isLength({ min: 5 }),], async (req, res) => {
 
         const errors = validationResult(req);
+        let success=false
 
         // if there are errors from validation,return bad request and array of errors which dosent match the validation
         if (!errors.isEmpty()) {
@@ -30,6 +31,7 @@ router.post('/createuser', [
             // check weather the user with the email exists already
             let user = await User.findOne({ email: req.body.email });
             if (user) {
+                success=false
                 return res.status(400).json({ error: "sorry a user with this email already exists" })
             }
 
@@ -57,8 +59,9 @@ router.post('/createuser', [
             }
             // creat token to authenticate user 
             const authToken = jwt.sign(data, JWT_SECRET_KEY);
+            success=true;
 
-            res.json({ authToken })
+            res.json({success, authToken })
 
 
         } catch (error) {
@@ -77,6 +80,7 @@ router.post('/login', [
     body('password', 'Password cannot be blank ').exists(),], async (req, res) => {
 
         const errors = validationResult(req);
+        let success=false;
 
         // if there are errors from validation,return bad request and the array of errors which dosent match the validation
         if (!errors.isEmpty()) {
@@ -91,11 +95,13 @@ router.post('/login', [
             //finding the user with correct email and password 
             let user = await User.findOne({ email });
             if (!user) {
+                success=false;
                 return res.status(400).json({ error: "please try to login with correct credentials" })
             }
             const passwordCompare = await bcrypt.compare(password, user.password);
             if (!passwordCompare) {
-                return res.status(400).json({ error: "please try to login with correct credentials" })
+                success=false;
+                return res.status(400).json({ success,error: "please try to login with correct credentials" })
             }
             //creating a payload to sent as the response,in this example id of the user to verifywhich will be embedded in the token
             const data = {
@@ -105,8 +111,9 @@ router.post('/login', [
             }
             // creat token to authenticate user 
             const authToken = jwt.sign(data, JWT_SECRET_KEY);
+            success=true
             //sending the authentication token
-            res.json({ authToken })
+            res.json({ success,authToken })
 
         } catch (error) {
             console.error(error.message)
