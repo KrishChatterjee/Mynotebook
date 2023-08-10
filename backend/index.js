@@ -1,4 +1,5 @@
 const connectToMongo=require('./db_connect');
+var cors = require('cors')
 const express = require('express')
 
 
@@ -7,6 +8,7 @@ connectToMongo();
 
 //creating express app at port 5000 because at port 3000 react app will run
 const app = express()
+app.use(cors())
 const port = 5000
 
 app.use(express.json())
