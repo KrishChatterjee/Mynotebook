@@ -1,33 +1,40 @@
 //Notes component map and displays all Noteitems
-import React, { useContext, useEffect, useState, useRef, } from 'react'
+import React, { useContext, useState, useRef, useEffect} from 'react'
 import noteContext from '../context/notes/noteContext';
 import { Noteitem } from './Noteitem';
 import { Modal } from './Modal';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 export const Notes = () => {
     //use the noteContext
     const context = useContext(noteContext);
     //destructuring the notes state and the context values
-    const { notes, getNotes } = context
+    const { notes,getNotes } = context
 
+    const navigate = useNavigate();
+    
     const refOpen = useRef(null);
+    useEffect(() => {
+        if(localStorage.getItem('token')){
+            getNotes();
+          }
+          else{
+            navigate('/login')
+          }
+        // eslint-disable-next-line
+    }, [])
 
 
 
     const [enote, setEnote] = useState({ id: "", etitle: "", edescription: "", etag: "" })
 
 
-    //using useEffect hook as a componentdidMount ,runs once the component is mounted to fetch notes
-    useEffect(() => {
-        getNotes();
-        // eslint-disable-next-line
-    }, [enote])
-
 
     //set the edit enote to current note 
-    const editNote = (currentNote) => {
-        // console.log(currentNote)         
+    const editNote = (currentNote) => {       
         setEnote({ id: currentNote._id, etitle: currentNote.title, edescription: currentNote.description, etag: currentNote.tag })
         setEnote((state) => {
             return state;

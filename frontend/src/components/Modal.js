@@ -2,6 +2,8 @@ import { React, useContext, useRef } from 'react'
 import noteContext from '../context/notes/noteContext';
 
 
+
+
 export const Modal = (props) => {
     //recive the state and change state function as props
     const { enote, setEnote, refOpen } = props
@@ -9,9 +11,12 @@ export const Modal = (props) => {
     const refClose = useRef(null);
 
 
+
     ///bringing update note from context
     const context = useContext(noteContext);
     const { updateNote } = context
+
+    
 
 
 
@@ -32,7 +37,6 @@ export const Modal = (props) => {
     const handleSubmitNote = (e) => {
         //to prevent from reloade the page 
         e.preventDefault();
-        console.log("updating the note ", enote)
         updateNote(enote.id, enote.etitle, enote.edescription, enote.etag)
         setEnote({ etitle: "", edescription: "", etag: "" })
         refClose.current.click()

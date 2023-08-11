@@ -47,7 +47,7 @@ router.post('/addnote',fetchuser, [
 
 //ROUTE 3:Updating  a existing note of a user using  : PUT "/api/notes/updatenote/:id, login require " 
 router.put('/updatenote/:id',fetchuser,async(req,res)=>{
-
+    let success=false
     //taking the title decription and tag by destructuring from response body
     const {title,description,tag}=req.body
         try {
@@ -69,7 +69,8 @@ router.put('/updatenote/:id',fetchuser,async(req,res)=>{
     }
     //if not the find and update the note with the newNote
     note=await Note.findByIdAndUpdate(req.params.id,{$set:newNote},{new:true})
-    res.json({note})
+    success=true
+    res.json({success:success,"msg":"Note has been Updated",note:note})
 
 
     } catch (error) {
@@ -82,9 +83,8 @@ router.put('/updatenote/:id',fetchuser,async(req,res)=>{
 //ROUTE 4:Deleting a note of a user using  : DELETE "/api/notes/deletenote/:id, login require " 
 
 router.delete('/deletenote/:id',fetchuser,async(req,res)=>{
-
+    let success=false
         try {
-    
     //finding the note of id  from req.params.id which is sent 
     let note =await Note.findById(req.params.id)
     // if note dosent exist then send not found
@@ -95,8 +95,8 @@ router.delete('/deletenote/:id',fetchuser,async(req,res)=>{
         return res.status(401).send("Not Allowed")
     }
     note=await Note.findByIdAndDelete(req.params.id)
-    res.json({"Success":"Note has been deleted",note:note})
-
+    success=true
+    res.json({success:success,"msg":"Note has been deleted",note:note})
 
     } catch (error) {
         console.error(error.message)

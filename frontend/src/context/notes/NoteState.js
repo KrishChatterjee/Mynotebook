@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState,useContext } from "react";
 import NoteContext from "./noteContext";
+import alertContext from '../alert/alertContext';
 
 const NoteState = (props) => {
   const host = "http://localhost:5000"
@@ -8,6 +9,26 @@ const NoteState = (props) => {
   //set a state for all notes 
   const [notes, setNotes] = useState(notesInitial)
 
+  const [user, setUser] = useState({name:"",email:"",})
+
+  const AlertContext = useContext(alertContext);
+  const { showAlert } = AlertContext
+
+
+  //GET THE USER:
+  const getUser=async()=>{
+    const response = await fetch(`${host}/api/auth/getuser`, {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem('token')
+      }
+    });
+    const json = await response.json();
+    setUser({name:json.name,email:json.email})
+
+
+  } 
 
   //GET ALL NOTES:
   const getNotes = async () => {
@@ -16,7 +37,7 @@ const NoteState = (props) => {
       method: "GET", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRiNDU5OTE0YzRkZTIzZDA2M2ZlZTZmIn0sImlhdCI6MTY4OTcwODI0N30.U0n97wmpVQcT8tJnm77i1hHOLxpp2jajobOS1pFic7Y"
+        "auth-token": localStorage.getItem('token')
       }
     });
     const json = await response.json();
@@ -33,13 +54,14 @@ const NoteState = (props) => {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRiNDU5OTE0YzRkZTIzZDA2M2ZlZTZmIn0sImlhdCI6MTY4OTcwODI0N30.U0n97wmpVQcT8tJnm77i1hHOLxpp2jajobOS1pFic7Y"
+        "auth-token": localStorage.getItem('token')
       },
       //body contains object of {title:title,description:description,tag:tag} written like this
       body: JSON.stringify({ title, description, tag }),
     });
     const note = await response.json();
     setNotes(notes.concat(note))
+    showAlert("Note has been Added","success")
   }
 
 
@@ -51,11 +73,13 @@ const NoteState = (props) => {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRiNDU5OTE0YzRkZTIzZDA2M2ZlZTZmIn0sImlhdCI6MTY4OTcwODI0N30.U0n97wmpVQcT8tJnm77i1hHOLxpp2jajobOS1pFic7Y"
+        "auth-token": localStorage.getItem('token')
       }
     });
     const json = await response.json();
-    // console.log(json)
+    showAlert(json.msg,"success")
+
+
 
     //Delete note from client side
     //filter the notes state variable array with the similar id reciving
@@ -75,13 +99,15 @@ const NoteState = (props) => {
       method: "PUT", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json",
-        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjRiNDU5OTE0YzRkZTIzZDA2M2ZlZTZmIn0sImlhdCI6MTY4OTcwODI0N30.U0n97wmpVQcT8tJnm77i1hHOLxpp2jajobOS1pFic7Y"
+        "auth-token": localStorage.getItem('token')
       },
 
       body: JSON.stringify({ title, description, tag }),
     });
     const json = await response.json();
-    // console.log(json)
+    console.log(json)
+    showAlert(json.msg,"success")
+
 
     //Logic to edit in client side
     let newNotes=JSON.parse(JSON.stringify(notes))
@@ -92,7 +118,10 @@ const NoteState = (props) => {
         newNotes[index].tag = tag;
         break;
       }
-      setNotes(newNotes)
+      setNotes(newNotes);
+      getNotes()
+      
+
 
     }
   }
@@ -101,7 +130,7 @@ const NoteState = (props) => {
 
   return (
     //provide the state or data or  function as the value to all the childrens using this context
-    <NoteContext.Provider value={{ notes, setNotes, addNote, deleteNote, updateNote, getNotes }}>
+    <NoteContext.Provider value={{ notes, setNotes, addNote, deleteNote, updateNote, getNotes,getUser,user }}>
       {props.children}
     </NoteContext.Provider>
   )

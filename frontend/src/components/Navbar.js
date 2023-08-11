@@ -1,16 +1,31 @@
-import React from 'react'
-
+import {React,useContext,useEffect} from 'react'
+import { useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom'
+import noteContext from '../context/notes/noteContext';
+
 
 
 //Navbar component  is the navigation bar 
 function Navbar() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(localStorage.getItem('token')){
+      getUser();
+    }
+    // eslint-disable-next-line
+}, [])
+
   //use location hook used to get the current location details
   let location = useLocation();
 
-  // React.useEffect(() => {
-  //   console.log(location.pathname);
-  // }, [location]);
+  const handelLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/login');
+  }
+
+  const context = useContext(noteContext);
+    const { user,getUser } = context
 
   return (
     <nav className="navbar navbar navbar-expand-lg navbar-light" style={{ "backgroundColor": "#e3f2fd" }}>
@@ -28,11 +43,12 @@ function Navbar() {
             <Link className="nav-link " to="about">About <span className="sr-only">(current)</span></Link>
           </li>
         </ul>
-        <form className="form-inline my-2 my-lg-0">
-       
+        {!localStorage.getItem('token') ? <form className="form-inline my-2 my-lg-0">
           <Link className="btn btn-success my-2 my-sm-0 mx-1" to="/login" type="submit">Login</Link>
           <Link className="btn btn-success my-2 my-sm-0 mx-1" to="/signup" type="submit">Sign Up</Link>
-        </form>
+          </form> : <form className="form-inline my-2 my-lg-0">
+             <Link className="navbar-brand" to="/">{`${user.name}`}</Link>
+             <button onClick={handelLogout} className='btn btn-success my-2 my-sm-0 mx-1'>Logout</button> </form>}
       </div>
     </nav>
   )

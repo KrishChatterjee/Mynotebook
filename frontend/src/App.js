@@ -4,15 +4,20 @@ import Home from './components/Home';
 import Navbar from './components/Navbar';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NoteState from './context/notes/NoteState';
-import { Alert } from './components/Alert';
 import { Login } from './components/Login';
 import { Signup } from './components/Signup';
+import AlertState from './context/alert/AlertState';
+import { Alert } from './components/Alert';
+
+
+
 
 
 
 function App() {
   return (
     <>
+    <AlertState>
       {/* wrap the entire app by notestate to use the context throughout all children */}
       <NoteState>
         {/* wrapping the all component within browser router */}
@@ -20,7 +25,7 @@ function App() {
           {/* Navbar is commom in all routes hence independent of Routes  */}
           <Navbar />
           {/* Alert just after navbar with message as props */}
-          <Alert message="hiii"/>
+          <Alert/>
           {/* All the Route are wrapped within Routes  */}
           <div className="container">
             <Routes>
@@ -32,6 +37,7 @@ function App() {
           </div>
         </BrowserRouter>
       </NoteState>
+    </AlertState>
     </>
   );
 }
